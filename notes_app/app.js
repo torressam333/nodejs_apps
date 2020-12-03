@@ -3,7 +3,7 @@ const fs = require('fs');
 const chalk = require('chalk');
 const yargs = require('yargs');
 //Notes utility
-const { notes } = require('./notes');
+const notes  = require('./notes');
 
 //Customize yargs version
 yargs.version('1.1.0');
@@ -27,7 +27,7 @@ yargs.command({
         }
     },
     handler: (argv) => {
-        note.addNote(argv.title, argv.body)
+        notes.addNote(argv.title, argv.body)
     }
 });
 
