@@ -1,17 +1,15 @@
 const fs = require('fs');
 const chalk = require('chalk');
 
-const getNotes = function () {
+const getNotes = () => {
     return 'This is a note... hahaha';
 };
 
-const addNote = function (title, body) {
+const addNote = (title, body) => {
     const notes = loadNotes();
 
     //Look through notes for duplicate titles
-    const duplicateNotes = notes.filter((note) => {
-        return note.title === title
-    });
+    const duplicateNotes = notes.filter((note) => note.title === title);
 
     if (duplicateNotes.length === 0) {
         //Push values passed in from app.js
@@ -28,7 +26,7 @@ const addNote = function (title, body) {
     }
 };
 
-const removeNote = function (title) {
+const removeNote = (title) => {
     const notes = loadNotes();
 
     const filteredNotes = notes.filter((notes) => notes.title !== title);

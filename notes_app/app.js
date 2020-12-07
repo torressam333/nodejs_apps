@@ -7,8 +7,6 @@ const notes  = require('./notes');
 //Customize yargs version
 yargs.version('1.1.0');
 
-//Add, remove, read and list notes
-
 //Create add command
 yargs.command({
     command: 'add',
