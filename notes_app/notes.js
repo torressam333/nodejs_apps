@@ -55,8 +55,18 @@ const loadNotes = () => {
     }
 };
 
+const listNotes = () => {
+    console.log(chalk.cyan.inverse('My Notes: '))
+    const getNotes = loadNotes();
+
+    return getNotes.filter((note) => {
+        console.log(`${note.title}`);
+    })
+};
+
 module.exports = {
     getNotes: getNotes,
     addNote: addNote,
-    removeNote: removeNote
+    removeNote: removeNote,
+    listNotes: listNotes
 };
