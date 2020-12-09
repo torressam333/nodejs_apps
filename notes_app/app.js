@@ -1,3 +1,4 @@
+const chalk = require('chalk');
 const validator = require('validator');
 const fs = require('fs');
 const yargs = require('yargs');
@@ -70,47 +71,3 @@ yargs.command({
 })
 
 yargs.parse();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-const add = require('./utils');
-const sum = add(98, 675);
-console.log(sum);
-*/
