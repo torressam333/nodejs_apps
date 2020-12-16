@@ -19,17 +19,25 @@ request({
 });
 
 
-/*
+
 //Api url
-const mapboxUrl = `https://api.mapbox.com/geocoding/v5/mapbox.places/Los%20Angeles.json?access_token=${process.env.MAPBOX_TOKEN}&limit=1`;
+const mapboxUrl = "https://api.mapbox.com/geocoding/v5/mapbox.places/chicago.json?access_token=" +
+    process.env.MAPBOX_TOKEN + "&limit=1";
 
 //Api request
 request({
     url: mapboxUrl,
-    json: true,
+    json: true
 }, (error, response) => {
-    let mapboxData = response.body;
-    let coordinates = mapboxData.features[0].center;
 
-    console.table("Longitude: " + coordinates[0] + " Latitude: " + coordinates[1]);
-});*/
+    console.log(response.body);
+    if (error) {
+        console.log('Unable to connect to geolocation services');
+    } else if (response.body.features.length === 0) {
+        console.log('No matching locations found');
+    } else{
+        const latitude = response.body.features[0].center[0];
+        const longitude = response.body.features[0].center[1];
+        console.table("Longitude: " + longitude + " Latitude: " + latitude);
+    }
+});
