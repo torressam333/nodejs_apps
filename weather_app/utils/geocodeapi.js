@@ -6,20 +6,20 @@ const geocode = (address, callback) => {
         process.env.MAPBOX_TOKEN + "&limit=1";
 
     request({
-        url: url,
+        url,
         json: true
-    }, (error, response) => {
+    }, (error, { body }) => {
         //Runs when request completes
         if (error) {
             //Send to callback in geocode call
             callback('Unable to connect to geolocation services', undefined);
-        } else if (response.body.features.length === 0) {
+        } else if (body.features.length === 0) {
             callback('No matching locations found', undefined);
         } else {
             const locationData = {
-                longitude: response.body.features[0].center[0],
-                latitude: response.body.features[0].center[1],
-                location: response.body.features[0].place_name
+                longitude: body.features[0].center[0],
+                latitude: body.features[0].center[1],
+                location: body.features[0].place_name
             }
 
             callback(undefined, locationData);
