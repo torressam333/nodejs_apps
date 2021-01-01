@@ -1,20 +1,32 @@
 const express = require('express');
 const path = require('path');
 
+/*Initialize express.js*/
 const app = express();
+
+/*Define paths for Express config*/
 const publicDir = path.join(__dirname, '../public');
 
-//Set up Handlebars
-app.set('view engine','hbs');
+/*Where express will look for handlebar files*/
+const viewsPath = path.join(__dirname, '../templates');
 
-//Serve up directory for js and css
+/*Set up Handlebars and 'views' location*/
+app.set('view engine','hbs');
+app.set('views', viewsPath);
+
+/*Serve up directory for js and css*/
 app.use(express.static(publicDir));
 
 /*
-* Configure what the server should do when someone tries to get the resource
+* 1. Configure what the server should do when someone tries to get the resource
 * at a specific URL in our domain.
-* DOCS: https://expressjs.com/en/4x/api.html#app.get
+* 2. res.render sends through the route name along with optional data
+* which can be used in the view(handlebars files) in {{title}} syntax.
+* DOCS:
+* https://expressjs.com/en/4x/api.html#res.render
+* https://expressjs.com/en/4x/api.html#app.get
 */
+
 app.get('', (req, res) => {
     res.render('index', {
         title: 'Weather',
@@ -33,7 +45,7 @@ app.get('/help', (req, res) => {
    res.render('help', {
        title: 'Help Page',
        helpText: 'Do you need help? If so ensure you have followed all troubleshooting steps prior to contacting one' +
-           'of our agents. Thank you.',
+           'of our agents.',
    });
 });
 
