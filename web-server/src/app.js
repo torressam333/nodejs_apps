@@ -62,6 +62,22 @@ app.get('/weather', (req, res) => {
     );
 });
 
+app.get('/help/*', (req, res) => {
+    res.render('404', {
+        title: '404',
+        notfoundMessage: 'Help article not found',
+        name: 'Samuel Torres'
+    });
+});
+
+app.get('*', (req, res) => {
+    res.render('404', {
+        title: '404',
+        notfoundMessage: 'Page not found',
+        name: 'Samuel Torres'
+    });
+});
+
 //Start express server (local): http://localhost:3000/
 app.listen(3000, () => {
     console.log('starting server on port 3000...');
