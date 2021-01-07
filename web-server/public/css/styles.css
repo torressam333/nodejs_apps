@@ -4,6 +4,10 @@ body {
     margin: 0 auto;
     max-width: 650px;
     padding: 0 1em;
+
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
 header {
@@ -24,6 +28,15 @@ header a {
 
 header a:hover {
     color: #474747;
+}
+
+.portrait {
+    border-radius: 3px;
+    width: 200px;
+}
+
+.main-content {
+    flex-grow: 1;
 }
 
 footer {
