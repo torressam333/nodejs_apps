@@ -1,6 +1,9 @@
 const express = require('express');
 const path = require('path');
 const hbs = require('hbs');
+const geocode = require('./utils/geocodeapi');
+const forecast = require('./utils/forecast');
+require('dotenv').config();
 
 /*Initialize express.js*/
 const app = express();
@@ -54,12 +57,33 @@ app.get('/help', (req, res) => {
 });
 
 app.get('/weather', (req, res) => {
-    res.send(
-        {
-            forecast: 'Cloudy with a chance of meatballs',
-            location: 'Buckeye AZ'
-        }
-    );
+    const address = req.query.address;
+
+    if (!address) {
+        return res.send({error: 'You must provide an address'});
+    }
+
+        geocode(address, (error, {latitude, longitude, location} = {}) => {
+            if (error) {
+                return res.send({ error });
+            }
+
+            //forecast input comes from geocode output (destructured)
+            forecast(latitude, longitude, (error, forecastData) => {
+                if (error) {
+                    return res.send({ error });
+                }
+
+                //If all went well send back proper data
+                res.send(
+                    {
+                        forecast: forecastData,
+                        location: location,
+                        address: address
+                    }
+                );
+            });
+        });
 });
 
 app.get('/help/*', (req, res) => {
