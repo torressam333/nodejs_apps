@@ -46,6 +46,21 @@ footer {
     padding: 1em 0;
 }
 
+#city {
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    cursor: pointer;
+    padding: 5px;
+}
+
+#weather-button {
+    padding:5px 15px;
+    background:#ccc;
+    border:0 none;
+    cursor:pointer;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+}
 
 .error {
     color: indianred;
