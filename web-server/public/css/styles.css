@@ -45,3 +45,8 @@ footer {
     margin-top: 1em;
     padding: 1em 0;
 }
+
+
+.error {
+    color: indianred;
+}
