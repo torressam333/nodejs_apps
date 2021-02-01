@@ -20,15 +20,26 @@ MongoClient.connect(connectionURL, {useNewUrlParser: true, useUnifiedTopology: t
         //1. Reference specific db to manipulate (connection)
         const db = client.db(databaseName);
 
-        db.collection('tasks').findOne({ _id: new ObjectID("600f3302e5ffbbaff2c161ae")}, (error, task) => {
-            if (error) {
-                return console.log('Unable to fetch');
+        db.collection('users').updateOne({
+            _id: new ObjectID("600f3143987d79adb188e1d9")
+        }, {
+           //Use update operators
+           $inc: {
+               age: -123
+           }
+        }).then((res) => {
+           console.log(res);
+        }).catch((err) => {
+            console.log(err)
+        });
+
+        db.collection('tasks').updateMany({
+            completed: false
+        }, {
+            //$set
+            $set: {
+                completed: true
             }
-
-            console.log(task);
-        });
-
-        db.collection('tasks').find({completed: false}).toArray((error, incompleteTasks) => {
-            console.log(incompleteTasks);
-        });
+        }).then((res) => console.log(res))
+            .catch((err) => console.log(err));
     });
