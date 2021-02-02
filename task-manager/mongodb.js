@@ -1,9 +1,3 @@
-/*Test File for Working With MongoDB*/
-
-/*const mongodb = require('mongodb');
-const MongoClient = mongodb.MongoClient;
-const ObjectID = mongodb.ObjectID;*/
-
 const {MongoClient, ObjectID} = require('mongodb');
 
 //Define connection url for the DB we are connecting to
@@ -20,5 +14,6 @@ MongoClient.connect(connectionURL, {useNewUrlParser: true, useUnifiedTopology: t
         //1. Reference specific db to manipulate (connection)
         const db = client.db(databaseName);
 
-
+        db.collection('tasks').deleteOne({ description: 'Delete this'})
+            .then(res => console.log(res)).catch(err => console.log(err));
     });
