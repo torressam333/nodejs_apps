@@ -10,6 +10,24 @@ mongoose.connect(connectionURL, {
     useCreateIndex: true
 });
 
+const Task = mongoose.model('Task', {
+   description: {
+       type: String,
+       required: true,
+       trim: true,
+   },
+    completed: {
+       type: Boolean,
+        default: false
+    }
+});
+
+const task = new Task({
+    description: 'Do a successful production release today',
+    completed: true
+}).save().then(response => console.log(response)).catch(err => console.log(err));
+
+
 const User = mongoose.model('User', {
     name: {
         type: String,
@@ -35,10 +53,22 @@ const User = mongoose.model('User', {
                 throw new Error('Email is invalid');
             }
         }
+    },
+    password: {
+        type: String,
+        required: true,
+        minLength: [6, 'Password must be at least 6 characters'],
+        trim: true,
+        validate(value) {
+            if (value.toLowerCase().includes('password')) {
+                throw new Error('Your password cannot contain the keyword of password')
+            }
+        }
     }
 });
 
 const Rob = new User({
     name: '  Robby  ',
-    email: '  ROB@GMAIL.COM  '
+    email: '  ROBBBY@GMAIL.COM  ',
+    password: 'MyRealPassHere'
 }).save().then(res =>console.log(res)).catch(err => console.log(err));
