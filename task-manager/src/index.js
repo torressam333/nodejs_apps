@@ -5,6 +5,7 @@ const express = require('express');
 require('./db/mongoose');
 
 const User = require('./models/user');
+const Task = require('./models/task');
 
 //Init express
 const app = express();
@@ -15,16 +16,30 @@ const port = process.env.PORT || 3000;
 //Auto parse incoming json to an object
 app.use(express.json())
 
+//Create user endpoint
 app.post('/users', (req, res) => {
     //Create user instance
     const user = new User(req.body);
     user.save().then(() => {
-        res.send(user);
+        res.status(201).send(user);
     }).catch((err) => {
         res.status(400)
             .send(err.message)
     });
 });
+
+//Create task endpoint
+app.post('/tasks', (req, res) => {
+    //Init task
+    const task = new Task(req.body);
+    //persist task
+    task.save().then(() => {
+        res.status(201.).send(task);
+    }).catch((err) => {
+        res.status(400).send(err.message);
+    });
+});
+
 
 app.listen(port, () => {
     console.log('Server is up on port ' + port)
