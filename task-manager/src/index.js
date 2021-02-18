@@ -56,7 +56,7 @@ app.get('/users/:id', (req, res) => {
 
     User.findById(_id).then((user) => {
         if (!user) {
-            return res.status(400).send('User not found');
+            return res.status(404).send('User not found');
         }
 
         res.send(user);
@@ -77,7 +77,7 @@ app.get('/tasks/:id', (req, res) => {
 
    Task.findById(_id).then((task) => {
        if (!task) {
-           return res.status(400).send('Task not found');
+           return res.status(404).send('Task not found');
        }
 
        res.send(task);
