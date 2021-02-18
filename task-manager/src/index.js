@@ -64,6 +64,27 @@ app.get('/users/:id', (req, res) => {
     }).catch(error => res.status(500).send(error.message));
 });
 
+//Fetch all tasks
+app.get('/tasks', (req, res) => {
+    Task.find({}).then((tasks) => {
+        res.send(tasks);
+    }).catch(error => res.status(500).send(error.message));
+});
+
+//Find a task by id
+app.get('/tasks/:id', (req, res) => {
+   const _id = req.params.id;
+
+   Task.findById(_id).then((task) => {
+       if (!task) {
+           return res.status(400).send('Task not found');
+       }
+
+       res.send(task);
+   }).catch(error => res.status(500).send(error.message));
+});
+
+
 app.listen(port, () => {
     console.log('Server is up on port ' + port)
 })
