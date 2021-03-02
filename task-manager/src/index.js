@@ -17,71 +17,89 @@ const port = process.env.PORT || 3000;
 app.use(express.json());
 
 //Create user endpoint
-app.post('/users', (req, res) => {
+app.post('/users', async (req, res) => {
     //Create user instance
     const user = new User(req.body);
-    user.save().then(() => {
+
+    try {
+        await user.save();
+        //runs if save promise is fulfilled
         res.status(201).send(user);
-    }).catch((err) => {
-        res.status(400)
-            .send(err.message)
-    });
+    } catch (e) {
+        res.status(400).send(e)
+    }
 });
-
-//Create task endpoint
-app.post('/tasks', (req, res) => {
-    //Init task
-    const task = new Task(req.body);
-    //persist task
-    task.save().then(() => {
-        res.status(201).send(task);
-    }).catch((err) => {
-        res.status(400).send(err.message);
-    });
-});
-
 
 //Fetch all users using Mongoose
-app.get('/users', (req, res) => {
-    User.find({}).then((users) => {
-        res.send(users) //sends back all users in response
-    }).catch((error) => {
-        res.status(500).send(error.message);
-    })
+app.get('/users', async (req, res) => {
+    try {
+        const users = await User.find({});
+        //runs if users are found
+        res.send(users)
+    } catch (e) {
+        res.status(500).send(e)
+    }
 });
 
 //Find user by id
-app.get('/users/:id', (req, res) => {
+app.get('/users/:id', async (req, res) => {
     const _id = req.params.id;
 
-    User.findById(_id).then((user) => {
+    try{
+        const user = await User.findById(_id);
+
         if (!user) {
-            return res.status(404).send('User not found');
+            return res.status(404).send()
         }
-
         res.send(user);
+    } catch (e) {
+        res.status(500).send()
+    }
+});
 
-    }).catch(error => res.status(500).send(error.message));
+//Create task endpoint
+app.post('/tasks', async (req, res) => {
+    //Init task
+    const task = new Task(req.body);
+
+    try {
+        await task.save();
+
+        //runs if save promise is fulfilled
+        res.status(201).send(task);
+    }catch (e) {
+        res.status(400).send(e);
+    }
 });
 
 //Fetch all tasks
-app.get('/tasks', (req, res) => {
-    Task.find({}).then((tasks) => {
+app.get('/tasks', async (req, res) => {
+
+    try {
+        const tasks = await Task.find({});
+        //if tasks are found, send them back
         res.send(tasks);
-    }).catch(error => res.status(500).send(error.message));
+    } catch (e) {
+        res.status(500).send();
+    }
 });
 
 //Find a task by id
-app.get('/tasks/:id', (req, res) => {
+app.get('/tasks/:id', async (req, res) => {
    const _id = req.params.id;
 
-   Task.findById(_id).then((task) => {
+   try {
+       const task = await Task.findById(_id);
+
        if (!task) {
-           return res.status(404).send('Task not found');
+           return res.status(404).send('Task not found by that ID');
        }
 
        res.send(task);
-   }).catch(error => res.status(500).send(error.message));
+
+   }catch (e) {
+       res.status(500).send();
+   }
 });
 
 
