@@ -57,6 +57,36 @@ app.get('/users/:id', async (req, res) => {
     }
 });
 
+//Update a specific user
+app.patch('/users/:id', async (req, res) => {
+    //Error handling for updating non-existent/restricted(_id) properties on user
+    const updates = Object.keys(req.body); //array of strings
+    const allowedUpdates = ['name', 'email', 'password', 'age'];
+
+    //Every string in update must match strings in allowedUpdates array
+    const isValidOperation = updates.every((update) => allowedUpdates.includes(update));
+
+    if (!isValidOperation) {
+        return res.status(400).send({ error: 'Invalid updates' })
+    }
+
+    const _id = req.params.id;
+
+    try {
+        const user = await User.findByIdAndUpdate(_id, req.body, { new: true, runValidators: true });
+
+        if (!user) {
+            return res.status(404).send();
+        }
+
+        //If all went well
+        res.send(user);
+    } catch (e) {
+        res.status(400).send(e);
+    }
+});
+
+
 //Create task endpoint
 app.post('/tasks', async (req, res) => {
     //Init task
@@ -101,7 +131,6 @@ app.get('/tasks/:id', async (req, res) => {
        res.status(500).send();
    }
 });
-
 
 app.listen(port, () => {
     console.log('Server is up on port ' + port)
