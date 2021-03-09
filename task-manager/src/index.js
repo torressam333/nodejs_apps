@@ -132,6 +132,33 @@ app.get('/tasks/:id', async (req, res) => {
    }
 });
 
+//Update a specific task by its _id
+app.patch('/tasks/:id', async (req, res) => {
+    //Error handling for updating non-existent/restricted(_id) properties on user
+    const updates = Object.keys(req.body); //array of strings
+    const allowedUpdates = ['completed', 'description'];
+
+    //Every string in update must match strings in allowedUpdates array
+    const isValidOperation = updates.every((update) => allowedUpdates.includes(update));
+
+    //If parameters don't match column names
+    if (!isValidOperation) {
+        return res.status(400).send({ error: 'Invalid updates' })
+    }
+
+    try {
+        const task = await Task.findByIdAndUpdate(req.params.id, req.body, {new: true, runValidator: true});
+
+        if (!task) {
+            return res.status(404).send();
+        }
+
+        res.send(task);
+    }catch (e) {
+        res.status(400).send(e);
+    }
+});
+
 app.listen(port, () => {
     console.log('Server is up on port ' + port)
 })
