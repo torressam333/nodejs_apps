@@ -1,5 +1,4 @@
 const express = require('express');
-
 const router = new express.Router();
 const User = require('../models/user');
 
@@ -60,7 +59,16 @@ router.patch('/users/:id', async (req, res) => {
     const _id = req.params.id;
 
     try {
-        const user = await User.findByIdAndUpdate(_id, req.body, { new: true, runValidators: true });
+        /*Forces update method/route to recognize mongoose middleware
+        * ln(65-71)
+        */
+        const user = await User.findById(_id);
+
+        //dynamically updates whatever property on user that is being updated ('name, pw, email')
+        updates.forEach((update) => user[update] = req.body[update]);
+
+        //Execute middleware
+        await user.save();
 
         if (!user) {
             return res.status(404).send();
