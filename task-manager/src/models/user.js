@@ -42,8 +42,12 @@ const userSchema = new mongoose.Schema({
 });
 
 //Must be standard function for `this` binding
-userSchema.pre('save', function (next) {
+userSchema.pre('save', async function (next) {
     const user = this;
+
+    if (user.isModified('password')) {
+        user.password = await bcrypt.hash(user.password, 8);
+    }
 
     //Ensure process is completed
     next();
