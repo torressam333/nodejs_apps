@@ -13,7 +13,7 @@ router.get('/users', async (req, res) => {
     }
 });
 
-//Create user endpoint
+//Create user endpoint (sign up)
 router.post('/users', async (req, res) => {
     //Create user instance
     const user = new User(req.body);
@@ -24,6 +24,16 @@ router.post('/users', async (req, res) => {
         res.status(201).send(user);
     } catch (e) {
         res.status(400).send(e)
+    }
+});
+
+router.post('/users/login', async (req, res) => {
+    try {
+        //Call reusable auth method
+        const user = await User.findByCredentials(req.body.email, req.body.password);
+        res.send(user);
+    }catch (e) {
+        res.status(400).send(e);
     }
 });
 

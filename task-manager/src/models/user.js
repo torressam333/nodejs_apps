@@ -19,6 +19,7 @@ const userSchema = new mongoose.Schema({
     },
     email: {
         type: String,
+        unique: true,
         required: true,
         trim: true,
         lowercase: true,
@@ -41,7 +42,7 @@ const userSchema = new mongoose.Schema({
     }
 });
 
-//Must be standard function for `this` binding
+//Hash plain text pw before saving
 userSchema.pre('save', async function (next) {
     const user = this;
 
@@ -53,7 +54,26 @@ userSchema.pre('save', async function (next) {
     next();
 });
 
+/*Authenticate user*/
+userSchema.statics.findByCredentials =  async (email, password) => {
+    const user = await User.findOne({email: email});
+
+    if (!user) {
+        throw new Error('Unable to login');
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+        throw new Error('Unable to login');
+    }
+
+
+    return user;
+};
+
 const User = mongoose.model('User', userSchema);
 
+User.createIndexes();
 
 module.exports = User;
