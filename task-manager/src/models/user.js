@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 const userSchema = new mongoose.Schema({
     name: {
@@ -39,7 +40,15 @@ const userSchema = new mongoose.Schema({
                 throw new Error('Your password cannot contain the keyword of password')
             }
         }
-    }
+    },
+    tokens : [
+        {
+            token: {
+                type: String,
+                required: true
+            }
+        }
+    ]
 });
 
 //Hash plain text pw before saving
@@ -54,7 +63,20 @@ userSchema.pre('save', async function (next) {
     next();
 });
 
-/*Authenticate user*/
+/*Reusable method to generate JWT for users*/
+userSchema.methods.generateAuthToken = async function() {
+    const user = this;
+    const token = jwt.sign({ _id: user._id.toString() }, 'supersimplesecret');
+
+    //Add token to array and save to user table
+    user.tokens = user.tokens.concat({token:token});
+    //Persist
+    await user.save();
+
+    return token;
+}
+
+/*Authenticate user - works as middleware*/
 userSchema.statics.findByCredentials =  async (email, password) => {
     const user = await User.findOne({email: email});
 
@@ -62,18 +84,19 @@ userSchema.statics.findByCredentials =  async (email, password) => {
         throw new Error('Unable to login');
     }
 
+    //Compare pw typed in at login to pw from the db belonging to the email
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
         throw new Error('Unable to login');
     }
 
-
     return user;
 };
 
 const User = mongoose.model('User', userSchema);
 
+//Check for duplicate emails
 User.createIndexes();
 
 module.exports = User;
