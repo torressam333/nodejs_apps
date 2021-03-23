@@ -1,17 +1,7 @@
 const express = require('express');
 const router = new express.Router();
 const User = require('../models/user');
-
-//Fetch all users using Mongoose
-router.get('/users', async (req, res) => {
-    try {
-        const users = await User.find({});
-        //runs if users are found
-        res.send(users)
-    } catch (e) {
-        res.status(500).send(e)
-    }
-});
+const auth = require('../middleware/authentication');
 
 //Create user endpoint (sign up)
 router.post('/users', async (req, res) => {
@@ -29,6 +19,7 @@ router.post('/users', async (req, res) => {
     }
 });
 
+//(log in route)
 router.post('/users/login', async (req, res) => {
     try {
         //Call reusable auth method
@@ -40,6 +31,14 @@ router.post('/users/login', async (req, res) => {
         res.status(400).send(e);
     }
 });
+
+
+//Each user loads their own profile
+router.get('/users/me', auth, async (req, res) => {
+    //Allow user to get their profile once authenticated
+    res.send(req.user);
+});
+
 
 //Find user by id
 router.get('/users/:id', async (req, res) => {
