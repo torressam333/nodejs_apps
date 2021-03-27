@@ -32,6 +32,37 @@ router.post('/users/login', async (req, res) => {
     }
 });
 
+//Log out route (individual token)
+router.post('/users/logout', auth, async (req, res) => {
+   try{
+       //Delete specific token from tokens array
+       req.user.tokens = req.user.tokens.filter((token) => {
+           //If the token in question is not the one we are
+           //looking for then keep it in the tokens array
+          return token.token !== req.token;
+       });
+
+       await req.user.save();
+
+       res.send();
+   } catch (e) {
+       res.status(500).send(e.message);
+   }
+});
+
+//Logout of all sessions
+router.post('/users/logoutAll', auth, async (req, res) => {
+    try {
+        //Delete all tokens
+        req.user.tokens = [];
+
+        await req.user.save();
+
+        res.send();
+    } catch (e) {
+        res.status(500).send(e.message);
+    }
+});
 
 //Each user loads their own profile
 router.get('/users/me', auth, async (req, res) => {

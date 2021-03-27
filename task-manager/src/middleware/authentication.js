@@ -19,6 +19,7 @@ const auth = async (req, res, next) => {
         if (!user) throw new Error();
 
         //Ensure route handler runs and has access to fetched user
+        req.token = token;
         req.user = user;
         next();
     } catch (e) {
