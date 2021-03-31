@@ -51,6 +51,20 @@ const userSchema = new mongoose.Schema({
     ]
 });
 
+//Only send back non-sensitive data in the response
+userSchema.methods.toJSON = function () {
+    const user = this;
+
+    //Get back raw obj of user data (mongoose method)
+    const userObject = user.toObject();
+
+    //Delete private data from user obj
+    delete userObject.password;
+    delete userObject.tokens;
+
+    return userObject;
+};
+
 //Hash plain text pw before saving
 userSchema.pre('save', async function (next) {
     const user = this;
