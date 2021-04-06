@@ -72,7 +72,7 @@ router.get('/users/me', auth, async (req, res) => {
 
 
 //Update a specific user
-router.patch('/users/:id', async (req, res) => {
+router.patch('/users/me', auth, async (req, res) => {
     //Error handling for updating non-existent/restricted(_id) properties on user
     const updates = Object.keys(req.body); //array of strings
     const allowedUpdates = ['name', 'email', 'password', 'age'];
@@ -84,23 +84,15 @@ router.patch('/users/:id', async (req, res) => {
         return res.status(400).send({ error: 'Invalid updates' })
     }
 
-    const _id = req.params.id;
-
     try {
-        /*Forces update method/route to recognize mongoose middleware
-        * ln(65-71)
-        */
-        const user = await User.findById(_id);
+        //stems from auth middleware
+        const user = req.user;
 
         //dynamically updates whatever property on user that is being updated ('name, pw, email')
         updates.forEach((update) => user[update] = req.body[update]);
 
         //Execute middleware
         await user.save();
-
-        if (!user) {
-            return res.status(404).send();
-        }
 
         //If all went well
         res.send(user);
