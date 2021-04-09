@@ -51,6 +51,15 @@ const userSchema = new mongoose.Schema({
     ]
 });
 
+/*Virtual property
+* ref: https://futurestud.io/tutorials/understanding-virtuals-in-mongoose
+*/
+userSchema.virtual('tasks', {
+    ref: 'Task', //Relationship to Task model
+    localField: '_id',
+    foreignField: 'owner'
+});
+
 //Only send back non-sensitive data in the response
 userSchema.methods.toJSON = function () {
     const user = this;

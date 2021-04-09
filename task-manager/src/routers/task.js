@@ -1,12 +1,15 @@
 const express = require('express');
 const router = new express.Router();
+const auth = require('../middleware/authentication');
 
 const Task = require('../models/task');
 
-//Create task endpoint
-router.post('/tasks', async (req, res) => {
-    //Init task
-    const task = new Task(req.body);
+//Create task endpoint and associate with a specific owner
+router.post('/tasks', auth, async (req, res) => {
+    const task = new Task({
+        ...req.body,
+        owner: req.user._id
+    });
 
     try {
         await task.save();
@@ -18,27 +21,30 @@ router.post('/tasks', async (req, res) => {
     }
 });
 
-//Fetch all tasks
-router.get('/tasks', async (req, res) => {
-
+//Fetch all tasks belonging to a specific user
+router.get('/tasks', auth, async (req, res) => {
     try {
-        const tasks = await Task.find({});
+       await req.user.populate('tasks').execPopulate();
+
         //if tasks are found, send them back
-        res.send(tasks);
+        res.send(req.user.tasks);
     } catch (e) {
         res.status(500).send();
     }
 });
 
 //Find a task by id
-router.get('/tasks/:id', async (req, res) => {
+router.get('/tasks/:id', auth, async (req, res) => {
     const _id = req.params.id;
 
     try {
-        const task = await Task.findById(_id);
+        const task = await Task.findOne({
+            _id,
+            owner: req.user._id //auth user's id
+        });
 
         if (!task) {
-            return res.status(404).send('Task not found by that ID');
+            return res.status(404).send('Task not found');
         }
 
         res.send(task);
@@ -48,8 +54,8 @@ router.get('/tasks/:id', async (req, res) => {
     }
 });
 
-//Update a specific task by its _id
-router.patch('/tasks/:id', async (req, res) => {
+//Auth user tp update their specific tasks by their _id
+router.patch('/tasks/:id', auth, async (req, res) => {
     //Error handling for updating non-existent/restricted(_id) properties on user
     const updates = Object.keys(req.body); //array of strings
     const allowedUpdates = ['completed', 'description'];
@@ -64,13 +70,18 @@ router.patch('/tasks/:id', async (req, res) => {
 
     try {
         //Mongoose middleware application
-        const task = await Task.findById(req.params.id);
-        updates.forEach((update) => task[update] = req.body[update]);
-        await task.save();
+        const task = await Task.findOne({
+            _id: req.params.id,
+            owner: req.user._id //auth user's id
+        });
 
         if (!task) {
             return res.status(404).send();
         }
+
+        updates.forEach((update) => task[update] = req.body[update]);
+
+        await task.save();
 
         res.send(task);
     }catch (e) {
@@ -79,9 +90,12 @@ router.patch('/tasks/:id', async (req, res) => {
 });
 
 //Delete individual task
-router.delete('/tasks/:id', async (req, res) => {
+router.delete('/tasks/:id', auth, async (req, res) => {
     try {
-        const task = await Task.findByIdAndDelete(req.params.id);
+        const task = await Task.findOneAndDelete({
+            _id: req.params.id,
+            owner: req.user._id
+        });
 
         if (!task) {
             res.status(404).send('Task not found');
