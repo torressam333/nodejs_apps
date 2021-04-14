@@ -50,6 +50,9 @@ const userSchema = new mongoose.Schema({
             }
         }
     ]
+}, {
+    //Schema options
+    timestamps: true
 });
 
 /*Virtual property
