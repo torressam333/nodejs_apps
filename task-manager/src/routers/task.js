@@ -24,7 +24,17 @@ router.post('/tasks', auth, async (req, res) => {
 //Fetch all tasks belonging to a specific user
 router.get('/tasks', auth, async (req, res) => {
     try {
-       await req.user.populate('tasks').execPopulate();
+        //Query string optional params
+        const match = {};
+
+        if (req.query.completed) {
+            match.completed = req.query.completed === 'true';
+        }
+
+       await req.user.populate({
+           path: 'tasks',
+           match: match
+       }).execPopulate();
 
         //if tasks are found, send them back
         res.send(req.user.tasks);
